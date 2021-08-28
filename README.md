@@ -44,6 +44,6 @@
 ## Other Endpoints
 > Documentation Format => `Endpoint` | Description | **Ratelimit** | Return Data
 ### Update Data
-* `/update | Force updates the local data and updates the cache` | **1req / 120s** | String
+* `/update` | Force updates the local data and updates the cache | **1req / 120s** | String
 
 > Made with ❤ by @Sāya#0113
