@@ -13,6 +13,7 @@
 * Supported Data: `Ship`, `Equipments`, `Barrages`, `Chapters` and `VoiceLines`
 
 ## TODO's
+* Config File
 * Authentication (Probably token & authentication support(?))
 * More endpoints for the supported datas
 
