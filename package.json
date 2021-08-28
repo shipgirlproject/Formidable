@@ -1,0 +1,26 @@
+{
+  "name": "formidable",
+  "version": "0.0.1",
+  "description": "A server side api for Azur Lane data",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js | pino-pretty -c -l -t ddd,mm/d/yy,HH:MM:ss -i hostname,pid"
+  },
+  "author": "Deivu <davexdme@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "fastify": "^3.14.2",
+    "fs-extra": "^10.0.0",
+    "fuse.js": "^6.4.6",
+    "node-fetch": "^2.6.1",
+    "pino": "^6.11.2",
+    "rate-limiter-flexible": "^2.2.4",
+    "sync-fetch": "^0.3.0",
+    "workerpool": "^6.1.4"
+  },
+  "devDependencies": {
+    "eslint": "^7.23.0",
+    "pino-pretty": "^4.7.1"
+  }
+}
