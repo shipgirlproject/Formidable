@@ -33,7 +33,7 @@
 ### Ships
 * `/ships/search?name='Formidable'` | Searches for the ship of your choice | **75req / 5s** | Object[]
 ### Equipments
-* `/equipments/search?name='Twin 410mm (3rd Year Type)'` | Searches for the equip of your choice | **75req / 5s** | Object[]
+* `/equipments/search?name='Twin 410mm'` | Searches for the equip of your choice | **75req / 5s** | Object[]
 ### Chapters
 * `/chapters/search?code='6-4'` | Searches for the chapter via it's code | **75req / 5s** | Object[]
 ### Voice Lines
