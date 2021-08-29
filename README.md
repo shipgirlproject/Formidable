@@ -26,7 +26,7 @@
 
 ## Endpoints
 ### Ships 
-| Enpoint         | Ratelimit      | Return Data     | Description     |
+| Endpoint         | Ratelimit      | Return Data     | Description     |
 | :-------------: | :------------: | :-------------: | :-------------: |
 | GET /ships/class?name=Iowa | 100req / 5s | Object[] | List all the ships that has this class |
 | GET /ships/hull?name=Battleship | 100req / 5s | Object[] | List all the ships that has this hull type |
@@ -35,29 +35,29 @@
 | GET /ships/rarity?name=Super%20Rare | 100req / 5s | Object[] | List all the ships that has this rarity |
 | GET /ships/search?name=Formidable | 75req / 5s | Object[] | Searches for the ship of your choice |
 ### Equipments
-| Enpoint         | Ratelimit      | Return Data     | Description     |
+| Endpoint         | Ratelimit      | Return Data     | Description     |
 | :-------------: | :------------: | :-------------: | :-------------: |
 | GET /equipments/category?name=Destroyer%20Guns | 100req / 5s | Object[] | List all the equipments that is in this category |
 | GET /equipments/nationality?name=Sakura%20Empire | 100req / 5s | Object[] | List all the equipments that has this nationality |
 | GET /equipments/search?name=Twin%20410mm | 75req / 5s | Object[] | Searches for the equip of your choice |
 ### Chapters
-| Enpoint         | Ratelimit      | Return Data     | Description     |
+| Endpoint         | Ratelimit      | Return Data     | Description     |
 | :-------------: | :-------------: | :-------------: | :-------------: |
 | GET /chapters/search?code=6-4 | 75req / 5s | Object[] | Searches for the chapter via it's code |
 ### Barrages
-| Enpoint         | Ratelimit      | Return Data     | Description     |
+| Endpoint         | Ratelimit      | Return Data     | Description     |
 | :-------------: | :------------: | :-------------: | :-------------: |
 | GET /barrages/search?name=Ayanami | 75req / 5s | Object | Searches a ship barrage via it's name |
 ### Voice Lines
-| Enpoint         | Ratelimit      | Return Data     | Description     |
+| Endpoint         | Ratelimit      | Return Data     | Description     |
 | :-------------: | :------------: | :-------------: | :-------------: |
 | GET /voicelines/ship?id=147 | 100req / 5s | Object | Gets the voice lines on a ship via it's ID |
 ### Data Version
-| Enpoint         | Ratelimit      | Return Data     | Description     |
+| Endpoint         | Ratelimit      | Return Data     | Description     |
 | :-------------: | :------------: | :-------------: | :-------------: |
 | GET /version | 100req / 5s | Object | Gets the current data version of Formidable |
 ### Data Update
-| Enpoint         | Ratelimit      | Headers        | Return Data     | Description     |
+| Endpoint         | Ratelimit      | Headers        | Return Data     | Description     |
 | :-------------: | :------------: | :------------: | :-------------: | :-------------: |
 | POST /update | 1req / 120s | {"authorization": "your config auth"} | String | Force updates the local data and updates the cache |
 
