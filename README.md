@@ -43,7 +43,7 @@
 ### Chapters
 | Endpoint         | Ratelimit      | Return Data     | Description     |
 | :-------------: | :-------------: | :-------------: | :-------------: |
-| GET /chapters/search?code=6-4 | 75req / 5s | Object[] | Searches for the chapter via it's code |
+| GET /chapters/search?code=6-4 | 75req / 5s | Object | Searches for the chapter via it's code or name |
 ### Barrages
 | Endpoint         | Ratelimit      | Return Data     | Description     |
 | :-------------: | :------------: | :-------------: | :-------------: |

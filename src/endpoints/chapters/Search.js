@@ -7,13 +7,11 @@ class Search extends Endpoint {
             points: 75, 
             duration: 5
         };
-        this.query = ['code'];
+        this.query = ['name'];
     }
 
     run(query) {
-        const results = this.cache.fuse.chapters.search(query[this.query[0]]);
-        if (results.length > this.maxResults) results.length = this.maxResults;
-        return results.map(res => res.item);
+        return this.cache.fuse.chapters.search(query[this.query[0]]).shift();
     }
 }
 

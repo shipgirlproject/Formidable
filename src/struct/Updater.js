@@ -15,7 +15,7 @@ const FILES = {
 const SEARCH = {
     SHIPS: ['names.en', 'names.jp', 'names.cn', 'names.kr', 'id'],
     EQUIPMENTS: ['names.en', 'names.jp', 'names.cn', 'names.kr', 'id'],
-    CHAPTERS: ['1.normal.code', '2.normal.code', '3.normal.code', '4.normal.code'],
+    CHAPTERS: ['names.en', 'names.jp', 'names.cn', 'normal.code'],
     BARRAGES: ['ships', 'name']
 };
 const URLS = {
@@ -55,8 +55,17 @@ const Update = outdated => {
             json: Fetch(URLS[key]).json()
         };
     });
-    for (let { key, json } of data) 
+    for (const { key, json } of data) {
+        if (key === 'CHAPTERS') {
+            const modified = [];
+            for (const value of json.map(data => Object.values(data))) 
+                for (const data of value) modified.push(data);
+            writeJSONSync(`${DIRECTORY}/${FILES[key]}`, modified, { spaces: 2 });
+            continue;
+        }
         writeJSONSync(`${DIRECTORY}/${FILES[key]}`, json, { spaces: 2 });
+    }
+        
 };
 
 // export
