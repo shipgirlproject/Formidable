@@ -24,26 +24,35 @@
 🔗 https://discord.com/invite/aAEdys8 (#support)
 
 ## API Ratelimits
-* Global: `150 req / 5s`
-* Default: `100 req / 5s` 
-* Per Route: `Can be default or customized, refer to Data Endpoints and Other Endpoints`
+| Global        | Default      | 404 requests  |
+| :-----------: | :----------: | :-----------: |
+| 150req / 5s | 100req / 5s | 5req / 5s |
+> The Default ratelimit is based on per endpoint, the endpoint can have it's own ratelimit, or use the default one. Refer to the endpoints documentation below
 
-## Data Endpoints 
-> Documentation Format => `Endpoint` | Description | **Ratelimit** | Return Data
-### Ships
-* `/ships/search?name='Formidable'` | Searches for the ship of your choice | **75req / 5s** | Object[]
+## Endpoints
+### Ships 
+| Enpoint         | Ratelimit      | Return Data     | Description     |
+| :-------------: | :-------------: | :-------------: | :-------------: |
+| GET /ships/search?name='Formidable' | 75req / 5s | Object[] | Searches for the ship of your choice |
 ### Equipments
-* `/equipments/search?name='Twin 410mm'` | Searches for the equip of your choice | **75req / 5s** | Object[]
+| Enpoint         | Ratelimit      | Return Data     | Description     |
+| :-------------: | :-------------: | :-------------: | :-------------: |
+| GET /equipments/search?name='Twin 410mm' | 75req / 5s | Object[] | Searches for the equip of your choice |
 ### Chapters
-* `/chapters/search?code='6-4'` | Searches for the chapter via it's code | **75req / 5s** | Object[]
+| Enpoint         | Ratelimit      | Return Data     | Description     |
+| :-------------: | :-------------: | :-------------: | :-------------: |
+| GET /chapters/search?code='6-4' | 75req / 5s | Object[] | Searches for the chapter via it's code |
 ### Voice Lines
-* `/voicelines/ship?id='147'` | Gets the voice lines on a ship via it's ID | **100req / 5s** | Object
+| Enpoint         | Ratelimit      | Return Data     | Description     |
+| :-------------: | :-------------: | :-------------: | :-------------: |
+| GET /voicelines/ship?id='147' | 100req / 5s | Object | Gets the voice lines on a ship via it's ID |
 ### Barrages
-* `/barrages/ship?name='147'` | Gets a ship barrage via it's name | **100req / 5s** | Object[]
-
-## Other Endpoints
-> Documentation Format => `Endpoint` | Description | **Ratelimit** | Return Data
+| Enpoint         | Ratelimit      | Return Data     | Description     |
+| :-------------: | :-------------: | :-------------: | :-------------: |
+| GET /barrages/ship?name='147' | 100req / 5s | Object | Gets a ship barrage via it's name |
 ### Update Data
-* `/update` | Force updates the local data and updates the cache | **1req / 120s** | String
+| Enpoint         | Ratelimit      | Return Data     | Description     |
+| :-------------: | :-------------: | :-------------: | :-------------: |
+| POST /update | 1req / 120s | String | Force updates the local data and updates the cache |
 
 > Made with ❤ by @Sāya#0113
