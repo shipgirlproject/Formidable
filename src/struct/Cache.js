@@ -1,6 +1,7 @@
 const { watchFile } = require('fs');
 const { readJSONSync } = require('fs-extra');
 const { FILES, SEARCH, DIRECTORY, Create } = require('./Updater.js');
+const { distance } = readJSONSync('./config.json');
 
 const Fuse = require('fuse.js');
 
@@ -10,8 +11,9 @@ class Cache {
         this.fuse = {};
         this.listening = false;
         for (const [ key, file ] of Object.entries(FILES)) this.update(key, `${DIRECTORY}/${file}`);
+        this.monitor();
     }
-
+    
     get version() {
         return this.data[FILES.VERSION.toLowerCase()];
     }
@@ -26,7 +28,8 @@ class Cache {
         this.data[key.toLowerCase()] = data;
         const keys = SEARCH[key];
         if (!keys) return;
-        this.fuse[key.toLowerCase()] = new Fuse(this.data[key.toLowerCase()], { keys });
+        const dist = distance || 0.5;
+        this.fuse[key.toLowerCase()] = new Fuse(this.data[key.toLowerCase()], { keys, distance: dist });
     }
 
     monitor() {

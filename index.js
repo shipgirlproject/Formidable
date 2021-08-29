@@ -1,6 +1,9 @@
+const { readJSONSync } = require('fs-extra');
+const { port, threads } = readJSONSync('./config.json');
+
 const Formidable = require('./src/Formidable.js');
-const Server = new Formidable();
-Server
-    .update()
-    .then(() => Server.load().listen(8080))
+
+new Formidable(threads)
+    .load()
+    .then(server => server.listen(port))
     .catch(console.error);

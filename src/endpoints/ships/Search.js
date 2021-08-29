@@ -12,7 +12,7 @@ class Search extends Endpoint {
 
     run(query) {
         const results = this.cache.fuse.ships.search(query[this.query[0]]);
-        if (results.length > 10) results.length = 10;
+        if (results.length > this.maxResults) results.length = this.maxResults;
         return results.map(res => res.item);
     }
 }

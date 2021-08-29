@@ -3,7 +3,7 @@ const { writeJSONSync, readJSONSync, existsSync, mkdirSync } = require('fs-extra
 const Fetch = require('sync-fetch');
 
 // constants
-const DIRECTORY = './data';
+const DIRECTORY = './.data';
 const FILES = {
     SHIPS: 'Ships.json',
     EQUIPMENTS: 'Equips.json',
@@ -15,13 +15,14 @@ const FILES = {
 const SEARCH = {
     SHIPS: ['names.en', 'names.jp', 'names.cn', 'names.kr', 'id'],
     EQUIPMENTS: ['names.en', 'names.jp', 'names.cn', 'names.kr', 'id'],
-    CHAPTERS: ['1.normal.code', '2.normal.code', '3.normal.code', '4.normal.code']
+    CHAPTERS: ['1.normal.code', '2.normal.code', '3.normal.code', '4.normal.code'],
+    BARRAGES: ['ships', 'name']
 };
 const URLS = {
     SHIPS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/ships.json',
     EQUIPMENTS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/equipments.json',
-    BARRAGES: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/barrage.json',
     CHAPTERS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/chapters.json',
+    BARRAGES: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/barrage.json',
     VOICELINES: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/voice_lines.json',
     VERSION: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/version-info.json'
 };

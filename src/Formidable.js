@@ -2,38 +2,50 @@ const Server = require('fastify');
 const Ratelimiter = require('./ratelimit/Ratelimiter.js');
 const Logger = require('./logger/Logger.js');
 
+const { readJSONSync } = require('fs-extra');
+const { cpus } = require('os');
 const { readdirSync } = require('fs-extra');
 const { pool } = require('workerpool');
+const { auth, autoUpdateInterval } = readJSONSync('./config.json');
 
 class Formidable {
-    constructor() {
+    constructor(threads) {
+        if (threads === 'auto' || isNaN(threads)) threads = cpus().length;
         this.logger = new Logger();
+        this.logger.info('[Server] Formidable initializing up');
         this.server = Server();
-        this.read = pool(`${__dirname}/worker/FormidableReader.js`, { minWorkers: 12, maxWorkers: 12, workerType: 'threads' });
-        this.write = pool(`${__dirname}/worker/FormidableWriter.js`, { minWorkers: 1, maxWorkers: 1, maxQueueSize: 1, workerType: 'process' });
-        this.logger.info(`[Server] Worker pool loaded! Using ${this.read.workerType} for read workers and ${this.write.workerType} for write worker`);
+        this.read = pool(`${__dirname}/worker/FormidableReader.js`, { minWorkers: threads - 1, maxWorkers: threads - 1, workerType: 'threads' });
+        this.write = pool(`${__dirname}/worker/FormidableWriter.js`, { minWorkers: 1, maxWorkers: 1, maxQueueSize: 1, workerType: 'threads' });
+        this.logger.info(`[Server] Worker pool loaded! Initialized ${this.read.workers.length} ${this.read.workerType} for read and ${this.write.workers.length} ${this.write.workerType} for write`);
+        if (isNaN(autoUpdateInterval)) return;
+        this.interval = setInterval(() => 
+            this.update()
+                .catch(error => this.logger.error(error)), autoUpdateInterval * 60000);
+        this.logger.info(`[Server] Checking for updates every ${autoUpdateInterval} min(s)`);
     }
 
     async handle(command, endpoint, request, reply) {
         try {
+            if (command.locked && auth !== request.headers?.authorization) {
+                reply.code(401);
+                return 'Unauthorized';
+            }
             if (command.query.length && !command.query.some(query => request.query[query])) {
                 reply.code(400);
-                return `This endpoint needs ${command.query.join(', ')} as a query string`;
+                return `This endpoint needs "${command.query.join(', ')}" as a query string`;
             }
             if (command.type === 'READ') {
                 const result = await this.read.exec('handle', [ endpoint, request.query ], { on: msg => this.logger.debug(msg) });
                 reply.type(command.mimeType);
                 return result;
-            } else {
-                if (endpoint === 'update') {
-                    await this.update();
-                    return 'OK';
-                } else {
-                    const result = await this.write.exec('handle', [ endpoint, request.query ], { on: msg => this.logger.debug(msg) });
-                    reply.type(command.mimeType);
-                    return result || 'OK';
-                }
-            }
+            } 
+            if (endpoint === 'update') {
+                await this.update();
+                return 'OK';
+            } 
+            const result = await this.write.exec('handle', [ endpoint, request.query ], { on: msg => this.logger.debug(msg) });
+            reply.type(command.mimeType);
+            return result || 'OK';
         } catch (error) {
             this.logger.error(error);
             reply.code(500);
@@ -45,7 +57,9 @@ class Formidable {
         return this.write.exec('handle', ['/update'], { on: msg => this.logger.info(msg) });
     }
 
-    load() { 
+    async load() { 
+        this.logger.info('[Server] Checking data integrity');
+        await this.update();
         // Load global ratelimit 
         const global = new Ratelimiter(this).global();
         this.logger.info(`[Ratelimits] Global: ${global.options.points} reqs / ${global.options.duration}s`);

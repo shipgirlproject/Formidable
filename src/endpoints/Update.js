@@ -10,6 +10,7 @@ class Update extends Endpoint {
         };
         this.type = 'WRITE';
         this.method = 'POST';
+        this.locked = true;
         this.mimeType = 'text/plain';
     }
 
