@@ -8,6 +8,8 @@ const { readdirSync } = require('fs-extra');
 const { pool } = require('workerpool');
 const { auth, autoUpdateInterval } = readJSONSync('./config.json');
 
+const authorization = auth || process.env.AUTHORIZATION;
+
 class Formidable {
     constructor(threads) {
         if (threads === 'auto' || isNaN(threads)) threads = cpus().length;
@@ -26,7 +28,7 @@ class Formidable {
 
     async handle(command, endpoint, request, reply) {
         try {
-            if (command.locked && auth !== request.headers?.authorization) {
+            if (command.locked && authorization !== request.headers?.authorization) {
                 reply.code(401);
                 return 'Unauthorized';
             }

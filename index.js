@@ -5,5 +5,5 @@ const Formidable = require('./src/Formidable.js');
 
 new Formidable(threads)
     .load()
-    .then(server => server.listen(port))
+    .then(server => server.listen(port || process.env.PORT))
     .catch(console.error);

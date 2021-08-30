@@ -1,7 +1,5 @@
 {
     "threads": "auto",
-    "auth": "1234",
-    "port": 2048,
     "distance": 0.5,
     "maxResults": 10,
     "autoUpdateInterval": 60,
