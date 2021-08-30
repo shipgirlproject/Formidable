@@ -104,7 +104,7 @@ class Formidable {
 
     async listen(port = process.env.PORT ?? config.port) {
         if (!port) this.logger.info('[Server] No port set, using random open port');
-        const address = await this.server.listen(port);
+        const address = await this.server.listen(port, '0.0.0.0');
         this.logger.info(`[Server] Server Loaded, Listening at ${address}`);
     }
 }
