@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<title>Formidable</title>
+<link rel="icon" href="https://raw.githubusercontent.com/Deivu/Haruna/master/assets/favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif;}
+body, html {
+  height: 100%;
+  color: #C0C0C0;
+  line-height: 1.8;
+  background-color: #282828;
+}
+
+/* Create a Parallax Effect */ 
+.bgimg-1, .bgimg-2, .bgimg-3 {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* First image (Logo. Full height) */
+.bgimg-1 {
+  background-image: url('https://raw.githubusercontent.com/Deivu/Haruna/master/assets/cover.png');
+  min-height: 100%;
+}
+
+.w3-hover-opacity {cursor: pointer;}
+
+/* Turn off parallax scrolling for tablets and phones */
+@media only screen and (max-device-width: 1600px) {
+  .bgimg-1 {
+    background-attachment: scroll;
+    min-height: 400px;
+  }
+}
+</style>
+<body>
+
+<div class="w3-top">
+  <div class="w3-bar" id="myNavbar">
+    <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large w3-right" href="javascript:void(0);" onclick="toggleFunction()" title="Toggle Navigation Menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <a href="#home" class="w3-bar-item w3-button">HOME</a>
+    <a href="#haruna" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-user"></i> HARUNA</a>
+    <a href="#statistics" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-gear"></i> STATISTICS</a>
+  </div>
+
+  <div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium">
+    <a href="#haruna" class="w3-bar-item w3-button" onclick="toggleFunction()">HARUNA</a>
+    <a href="#statistics" class="w3-bar-item w3-button" onclick="toggleFunction()">STATISTICS</a>
+  </div>
+</div>
+
+<div class="bgimg-1 w3-display-container w3-opacity-min" id="home">
+  <div class="w3-display-middle" style="white-space:nowrap;">
+    <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">HARUNA<span class="w3-hide-small"></span></span>
+  </div>
+</div>
+
+<div class="w3-content w3-container w3-padding-64" id="haruna">
+  <h3 class="w3-center">ABOUT ME</h3>
+  <div class="w3-row">
+    <div class="w3-col m6 w3-center w3-padding-large">
+      <img src="https://raw.githubusercontent.com/Deivu/Haruna/master/assets/profile.png" class="w3-round w3-image w3-opacity w3-hover-opacity-off" alt="Haruna" width="500" height="333">
+    </div>
+    <div class="w3-col m6 w3-hide-small w3-padding-large">
+      <br>
+      <br>
+      <br>
+      <p><b><i class="w3-margin-right"></i>Haruna</b></p>
+      <p><i class="w3-margin-right"></i>Version <span id="version">. . . .</span> </p>
+      <br>
+      <p><i class="w3-margin-right"></i>A webhook server for all your <a href="https://discordbots.org/api/docs#webhooks">top.gg</a> voting needs</p>
+      <p><i class="w3-margin-right"></i>Written with Java & ❤ by <a href="https://github.com/Deivu">Saya</a></p>
+      <br>
+      <p><i class="w3-margin-right"></i><a href="https://github.com/Deivu/Haruna/releases">Download</a> | <a href="https://github.com/Deivu/Haruna">Github</a> | <a href="https://discord.gg/FVqbtGu">Discord</a> | <a href="https://www.patreon.com/user?u=12059417">Donate</a></p>
+    </div>
+  </div>
+  <p class="w3-large w3-center w3-padding-16"  id="statistics">Statistics<span id="date"></span></p>
+  <p class="w3-wide">Used | Max Memory</p>
+  <div class="w3-light-grey">
+    <div class="w3-container w3-padding-small w3-dark-grey w3-center" style="width:100%"> <span id="memory">. . . .</span> </div>
+  </div>
+  <p class="w3-wide">Saved User Vote(s)</p>
+  <div class="w3-light-grey">
+    <div class="w3-container w3-padding-small w3-dark-grey w3-center" style="width:100%"> <span id="saved">. . . .</span> </div>
+  </div>
+  <p class="w3-wide">Request(s) Served</p>
+  <div class="w3-light-grey">
+    <div class="w3-container w3-padding-small w3-dark-grey w3-center" style="width:100%"> <span id="requests">. . . .</span> </div>
+  </div>
+  <p class="w3-wide">Uptime</p>
+  <div class="w3-light-grey">
+    <div class="w3-container w3-padding-small w3-dark-grey w3-center" style="width:100%"> <span id="uptime">. . . .</span> </div>
+  </div>
+</div>
+
+
+<footer class="w3-center w3-black w3-padding-64 w3-opacity w3-hover-opacity-off">
+  <a href="#home" class="w3-button w3-light-grey"><i class="fa fa-arrow-up w3-margin-right"></i>To the top</a>
+  <div class="w3-xlarge w3-section">
+    <p><h5>The Shipgirl Project</h5>
+    <p><h5>&copy; Kancolle for Haruna</h5>
+  </div>
+</footer>
+ 
+<script>
+window.onscroll = function() {
+    const navbar = document.getElementById("myNavbar");
+    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        navbar.className = "w3-bar" + " w3-card" + " w3-animate-top" + " w3-black";
+    } else {
+        navbar.className = navbar.className.replace(" w3-card w3-animate-top w3-black", "");
+    }
+};
+window.onload = async function() {
+    try {
+        let data = await fetch(window.location.pathname.length > 1 ? `${window.location.pathname}/stats` : "stats");
+        data = await data.json();
+        console.log("Raw API Stats: ", data);
+        data.stats_last_updated = new Date(data.stats_last_updated);
+        document.getElementById("version").innerHTML = data.haruna_version;
+        document.getElementById("memory").innerHTML = `${data.used_memory} | ${data.maximum_allocatable}`;
+        document.getElementById("uptime").innerHTML = data.program_uptime;
+        document.getElementById("saved").innerHTML = Number(data.saved_data).toLocaleString();
+        document.getElementById("requests").innerHTML = Number(data.api_requests_received).toLocaleString();
+        const date = data.stats_last_updated.toLocaleString(
+            "en-US",
+            {
+                dateStyle: "medium",
+                timeStyle: "short",
+                hour12: true,
+                hourCycle: "h12"
+            } );
+        document.getElementById("date").innerHTML = `; ${date}`;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function toggleFunction() {
+    const x = document.getElementById("navDemo");
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+    } else {
+        x.className = x.className.replace(" w3-show", "");
+    }
+}
+</script>
+
+</body>
+</html>
