@@ -12,6 +12,10 @@
 * Automated Data Maintenance
 * Supported Data: `Ship`, `Equipments`, `Barrages`, `Chapters` and `VoiceLines`
 
+## API
+
+🔗 https://formidable.herokuapp.com/
+
 ## Support
 
 🔗 https://discord.com/invite/FVqbtGu (#development)
@@ -36,29 +40,33 @@
 | GET /ships/search?name=Formidable | 75req / 5s | Object[] | Searches for the ship of your choice |
 ### Equipments
 | Endpoint         | Ratelimit      | Return Data     | Description     |
-| :-------------: | :------------: | :-------------: | :-------------: |
+| :--------------: | :------------: | :-------------: | :-------------: |
 | GET /equipments/category?name=Destroyer%20Guns | 100req / 5s | Object[] | List all the equipments that is in this category |
 | GET /equipments/nationality?name=Sakura%20Empire | 100req / 5s | Object[] | List all the equipments that has this nationality |
 | GET /equipments/search?name=Twin%20410mm | 75req / 5s | Object[] | Searches for the equip of your choice |
 ### Chapters
 | Endpoint         | Ratelimit      | Return Data     | Description     |
-| :-------------: | :-------------: | :-------------: | :-------------: |
-| GET /chapters/search?code=6-4 | 75req / 5s | Object | Searches for the chapter via it's code or name |
+| :--------------: | :------------: | :-------------: | :-------------: |
+| GET /chapters/search?name=6-4 | 75req / 5s | Object | Searches for the chapter via it's code or name |
 ### Barrages
 | Endpoint         | Ratelimit      | Return Data     | Description     |
-| :-------------: | :------------: | :-------------: | :-------------: |
+| :--------------: | :------------: | :-------------: | :-------------: |
 | GET /barrages/search?name=Ayanami | 75req / 5s | Object | Searches a ship barrage via it's name |
 ### Voice Lines
 | Endpoint         | Ratelimit      | Return Data     | Description     |
-| :-------------: | :------------: | :-------------: | :-------------: |
+| :--------------: | :------------: | :-------------: | :-------------: |
 | GET /voicelines/ship?id=147 | 100req / 5s | Object | Gets the voice lines on a ship via it's ID |
 ### Data Version
 | Endpoint         | Ratelimit      | Return Data     | Description     |
-| :-------------: | :------------: | :-------------: | :-------------: |
+| :--------------: | :------------: | :-------------: | :-------------: |
 | GET /version | 100req / 5s | Object | Gets the current data version of Formidable |
 ### Data Update
 | Endpoint         | Ratelimit      | Headers        | Return Data     | Description     |
-| :-------------: | :------------: | :------------: | :-------------: | :-------------: |
+| :--------------: | :------------: | :------------: | :-------------: | :-------------: |
 | POST /update | 1req / 120s | {"authorization": "your config auth"} | String | Force updates the local data and updates the cache |
+### Status
+| Endpoint         | Ratelimit      | Return Data     | Description     |
+| :--------------: | :------------: | :-------------: | :-------------: |
+| GET /status | 100req / 5s | Object | Gets some metrics from Formidable |
 
 > Made with ❤ by @Sāya#0113
