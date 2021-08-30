@@ -6,12 +6,12 @@ const { readJSONSync } = require('fs-extra');
 const { cpus } = require('os');
 const { readdirSync } = require('fs-extra');
 const { pool } = require('workerpool');
-const { auth, autoUpdateInterval } = readJSONSync('./config.json');
 
-const authorization = auth || process.env.AUTHORIZATION;
+const config = readJSONSync('./config.json');
+const authorization = process.env.AUTHORIZATION ?? config.auth;
 
 class Formidable {
-    constructor(threads) {
+    constructor(threads = config.threads) {
         if (threads === 'auto' || isNaN(threads)) threads = cpus().length;
         this.logger = new Logger();
         this.logger.info('[Server] Formidable initializing up');
@@ -19,11 +19,11 @@ class Formidable {
         this.read = pool(`${__dirname}/worker/FormidableReader.js`, { minWorkers: threads - 1, maxWorkers: threads - 1, workerType: 'threads' });
         this.write = pool(`${__dirname}/worker/FormidableWriter.js`, { minWorkers: 1, maxWorkers: 1, maxQueueSize: 1, workerType: 'threads' });
         this.logger.info(`[Server] Worker pool loaded! Initialized ${this.read.workers.length} ${this.read.workerType} for read and ${this.write.workers.length} ${this.write.workerType} for write`);
-        if (isNaN(autoUpdateInterval)) return;
+        if (isNaN(config.autoUpdateInterval)) return;
         this.interval = setInterval(() => 
             this.update()
-                .catch(error => this.logger.error(error)), autoUpdateInterval * 60000);
-        this.logger.info(`[Server] Checking for updates every ${autoUpdateInterval} min(s)`);
+                .catch(error => this.logger.error(error)), config.autoUpdateInterval * 60000);
+        this.logger.info(`[Server] Checking for updates every ${config.autoUpdateInterval} min(s)`);
     }
 
     async handle(command, endpoint, request, reply) {
@@ -102,7 +102,7 @@ class Formidable {
         return this;
     }
 
-    async listen(port) {
+    async listen(port = process.env.PORT ?? config.port) {
         const address = await this.server.listen(port);
         this.logger.info(`[Server] Server Loaded, Listening at ${address}`);
     }
