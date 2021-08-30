@@ -65,7 +65,6 @@ const Update = outdated => {
         }
         writeJSONSync(`${DIRECTORY}/${FILES[key]}`, json, { spaces: 2 });
     }
-        
 };
 
 // export

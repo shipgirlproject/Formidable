@@ -9,6 +9,9 @@
   },
   "author": "Deivu <davexdme@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "dependencies": {
     "fastify": "^3.14.2",
     "fs-extra": "^10.0.0",
