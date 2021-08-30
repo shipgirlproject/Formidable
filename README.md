@@ -16,6 +16,13 @@
 
 🔗 https://formidable.herokuapp.com/
 
+## Self host?
+* Install Node.JS >=14.0.0
+* Download the Repo
+* Do `npm i`
+* Put `port` and `auth` in the config.json, or use the env `PORT` or `AUTHORIZATION`
+* Do `npm run dev` for testing, `npm start` for prod
+
 ## Support
 
 🔗 https://discord.com/invite/FVqbtGu (#development)

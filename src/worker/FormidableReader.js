@@ -7,6 +7,7 @@ const handlers = new Map();
 const cache = new Cache();
 const routes = readdirSync('./src/endpoints', { withFileTypes: true });
 
+handlers.set('/formidable.html', new (require('../struct/Landing.js'))(cache));
 for (const path of routes) {
     if (path.isFile() && path.name.endsWith('.js')) {
         const endpoint = `/${path.name.split('.').shift().toLowerCase()}`;
@@ -35,6 +36,7 @@ const handle = (endpoint, query) => {
     // mimeType return thing for future things
     switch (handler.mimeType) {
         case 'application/json': return JSON.stringify(data, null, 4);
+        case 'text/html':
         case 'text/plain': return data;
         default: throw new Error(`Unsupported mimeType ${handler.mimeType} for ${endpoint}`);
     }

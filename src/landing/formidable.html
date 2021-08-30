@@ -8,14 +8,18 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif;}
 body, html {
   height: 100%;
-  color: #C0C0C0;
+  color: #000000;
   line-height: 1.8;
   background-color: #282828;
 }
-
+body,h1,h2,h3,h4,h5,h6 { 
+  font-family: "Lato", sans-serif; 
+}
+p {
+  color: #C0C0C0;
+}
 /* Create a Parallax Effect */ 
 .bgimg-1, .bgimg-2, .bgimg-3 {
   background-attachment: fixed;
@@ -47,14 +51,14 @@ body, html {
     <a class="w3-bar-item w3-button w3-hover-black w3-hide-medium w3-hide-large w3-right" href="javascript:void(0);" onclick="toggleFunction()" title="Toggle Navigation Menu">
       <i class="fa fa-bars"></i>
     </a>
-    <a href="#home" class="w3-bar-item w3-button">HOME</a>
-    <a href="#haruna" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-user"></i>Formidable</a>
-    <a href="#statistics" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-gear"></i> STATISTICS</a>
+    <a href="#home" class="w3-bar-item w3-button">Home</a>
+    <a href="#haruna" class="w3-bar-item w3-button w3-hide-small">Formidable</a>
+    <a href="#statistics" class="w3-bar-item w3-button w3-hide-small">Statistics</a>
   </div>
 
   <div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium">
     <a href="#haruna" class="w3-bar-item w3-button" onclick="toggleFunction()">Formidable</a>
-    <a href="#statistics" class="w3-bar-item w3-button" onclick="toggleFunction()">STATISTICS</a>
+    <a href="#statistics" class="w3-bar-item w3-button" onclick="toggleFunction()">Statistics</a>
   </div>
 </div>
 
@@ -128,7 +132,7 @@ window.onload = async function() {
         console.log("Raw API Version: ", versions);
         document.getElementById("ships").innerHTML = versions.ships["number-of-ships"];
         document.getElementById("version").innerHTML = versions["version-number"];
-        document.getElementById("memory").innerHTML = formatBytes(status.memory);
+        document.getElementById("memory").innerHTML = bytesToSize(status.memory);
         document.getElementById("uptime").innerHTML = forHumans(status.uptime);
     } catch (error) {
         console.error(error);

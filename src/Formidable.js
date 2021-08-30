@@ -98,6 +98,16 @@ class Formidable {
                 }
             }
         }
+        // setup landing page
+        const command = new (require('./struct/Landing.js'))();
+        const ratelimit = new Ratelimiter(this, command.ratelimit);
+        ratelimit.route({
+            method: command.method,
+            url: '/',
+            handler: (...args) => this.handle(command, '/formidable.html', ...args)
+        });
+        this.logger.info(`[Endpoints] Endpoint Loaded: /formidable.html | [Ratelimits] ${ratelimit.options.points} reqs / ${ratelimit.options.duration}s`);
+        // loaded
         this.logger.info('[Endpoints] Done loading endpoints!');
         return this;
     }
