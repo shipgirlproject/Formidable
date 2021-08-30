@@ -18,11 +18,12 @@ const SEARCH = {
     CHAPTERS: ['names.en', 'names.jp', 'names.cn', 'normal.code'],
     BARRAGES: ['ships', 'name']
 };
+// idk what to use here tbh, kumo pls help
 const URLS = {
-    SHIPS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/ships.json',
-    EQUIPMENTS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/equipments.json',
-    CHAPTERS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/chapters.json',
-    BARRAGES: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/barrage.json',
+    SHIPS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/dist/ships.json',
+    EQUIPMENTS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/dist/equipments.json',
+    CHAPTERS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/dist/chapters.json',
+    BARRAGES: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/dist/barrage.json',
     VOICELINES: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/voice_lines.json',
     VERSION: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/version-info.json'
 };
