@@ -11,7 +11,7 @@ class Search extends Endpoint {
     }
 
     run(query) {
-        return this.cache.fuse.chapters.search(query[this.query[0]]).shift();
+        return this.cache.fuse.chapters.search(query[this.query[0]]).shift()?.item;
     }
 }
 
