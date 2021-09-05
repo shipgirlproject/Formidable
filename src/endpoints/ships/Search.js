@@ -3,8 +3,8 @@ const Endpoint = require('../../struct/Endpoint.js');
 class Search extends Endpoint {
     constructor(...args) {
         super(...args);
-        this.ratelimit = { 
-            points: 75, 
+        this.ratelimit = {
+            points: 40,
             duration: 5
         };
         this.query = ['name'];

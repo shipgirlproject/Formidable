@@ -4,8 +4,8 @@ class Search extends Endpoint {
     constructor(...args) {
         super(...args);
         this.query = ['name'];
-        this.ratelimit = { 
-            points: 75, 
+        this.ratelimit = {
+            points: 40,
             duration: 5
         };
     }

@@ -20,10 +20,10 @@
     "pino": "^6.11.2",
     "rate-limiter-flexible": "^2.2.4",
     "sync-fetch": "^0.3.0",
-    "workerpool": "^6.1.4"
+    "workerpool": "^6.1.5"
   },
   "devDependencies": {
     "eslint": "^7.23.0",
-    "pino-pretty": "^4.7.1"
+    "pino-pretty": "^6.0.0"
   }
 }

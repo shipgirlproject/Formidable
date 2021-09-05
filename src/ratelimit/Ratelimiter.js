@@ -1,13 +1,13 @@
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 
 class Ratelimiter {
-    // Default global ratelimit, 150 req / 5s | 30 req / 1s
-    constructor(formidable, options = { points: 150, duration: 5 }) {
+    // Default ratelimit: 20 req / 1s
+    constructor(formidable, options = { points: 100, duration: 5 }) {
         this.formidable = formidable;
         this.options = options;
         this.manager = new RateLimiterMemory(options);
     }
-    
+
     get server() {
         return this.formidable.server;
     }

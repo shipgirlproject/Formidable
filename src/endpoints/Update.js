@@ -4,8 +4,8 @@ const Endpoint = require('../struct/Endpoint.js');
 class Update extends Endpoint {
     constructor(...args) {
         super(...args);
-        this.ratelimit = { 
-            points: 1, 
+        this.ratelimit = {
+            points: 1,
             duration: 120
         };
         this.type = 'WRITE';
@@ -17,9 +17,15 @@ class Update extends Endpoint {
     run() {
         Updater.Create();
         const outdated = Updater.Check();
-        if (!outdated.length) return 'OK';
+        if (!outdated.length) {
+            const msg = 'Data is up to date!';
+            this.info(msg);
+            return msg;
+        }
         Updater.Update(outdated);
-        return 'OK';
+        const msg = 'Not up to date, data updated!';
+        this.info(msg);
+        return msg;
     }
 }
 

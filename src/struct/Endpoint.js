@@ -5,9 +5,9 @@ const { maxResults } = readJSONSync('./config.json');
 class Route {
     constructor(cache) {
         this.cache = cache;
-        this.ratelimit = { 
-            points: 100, 
-            duration: 5 
+        this.ratelimit = {
+            points: 50,
+            duration: 5
         };
         this.type = 'READ';
         this.method = 'GET';
@@ -23,7 +23,7 @@ class Route {
     info(msg) {
         workerEmit(`[${this.type} thread][Worker ${process.pid}] ${msg}`);
     }
-    
+
     run() {
         throw new Error('Must be extended and implemented');
     }

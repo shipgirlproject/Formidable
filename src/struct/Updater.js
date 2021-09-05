@@ -25,10 +25,18 @@ const URLS = {
     CHAPTERS: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/dist/chapters.json',
     BARRAGES: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/dist/barrage.json',
     VOICELINES: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/voice_lines.json',
-    VERSION: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/version-info.json'
+    VERSION: 'https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/dist/version.json'
 };
 
-// functions
+// non exported functions
+const SyncDownload = key => {
+    return {
+        key,
+        json: Fetch(URLS[key]).json()
+    };
+};
+const ForceUpdate = () => Object.values(FILES).some(file => !Object.keys(readJSONSync(`${DIRECTORY}/${file}`)).length);
+// exported functions
 const Create = () => {
     if (!existsSync(DIRECTORY)) mkdirSync(DIRECTORY);
     for (const file of Object.values(FILES)) {
@@ -36,9 +44,8 @@ const Create = () => {
         writeJSONSync(`${DIRECTORY}/${file}`, {});
     }
 };
-const Force = () => Object.values(FILES).some(file => !Object.keys(readJSONSync(`${DIRECTORY}/${file}`)).length);
 const Check = () => {
-    if (Force()) return Object.keys(FILES);
+    if (ForceUpdate()) return Object.keys(FILES);
     const remote = Fetch(URLS.VERSION).json();
     const local = readJSONSync(`${DIRECTORY}/${FILES.VERSION}`);
     const outdated = [];
@@ -50,16 +57,11 @@ const Check = () => {
     return outdated;
 };
 const Update = outdated => {
-    const data = outdated.map(key => {
-        return {
-            key,
-            json: Fetch(URLS[key]).json()
-        };
-    });
+    const data = outdated.map(SyncDownload);
     for (const { key, json } of data) {
         if (key === 'CHAPTERS') {
             const modified = [];
-            for (const value of json.map(data => Object.values(data))) 
+            for (const value of json.map(data => Object.values(data)))
                 for (const data of value) modified.push(data);
             writeJSONSync(`${DIRECTORY}/${FILES[key]}`, modified, { spaces: 2 });
             continue;
@@ -69,4 +71,4 @@ const Update = outdated => {
 };
 
 // export
-module.exports = { DIRECTORY, FILES, SEARCH, URLS, Create, Force, Check, Update };
+module.exports = { DIRECTORY, FILES, SEARCH, URLS, Create, Check, Update };

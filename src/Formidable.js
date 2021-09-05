@@ -20,7 +20,7 @@ class Formidable {
         this.write = pool(`${__dirname}/worker/FormidableWriter.js`, { minWorkers: 1, maxWorkers: 1, maxQueueSize: 1, workerType: 'threads' });
         this.logger.info(`[Server] Worker pool loaded! Initialized ${this.read.workers.length} ${this.read.workerType} for read and ${this.write.workers.length} ${this.write.workerType} for write`);
         if (isNaN(config.autoUpdateInterval)) return;
-        this.interval = setInterval(() => 
+        this.interval = setInterval(() =>
             this.update()
                 .catch(error => this.logger.error(error)), config.autoUpdateInterval * 60000);
         this.logger.info(`[Server] Checking for updates every ${config.autoUpdateInterval} min(s)`);
@@ -40,11 +40,8 @@ class Formidable {
                 const result = await this.read.exec('handle', [ endpoint, request.query ], { on: msg => this.logger.debug(msg) });
                 reply.type(command.mimeType);
                 return result;
-            } 
-            if (endpoint === 'update') {
-                await this.update();
-                return 'OK';
-            } 
+            }
+            if (endpoint === 'update') return await this.update();
             const result = await this.write.exec('handle', [ endpoint, request.query ], { on: msg => this.logger.debug(msg) });
             reply.type(command.mimeType);
             return result || 'OK';
@@ -59,10 +56,10 @@ class Formidable {
         return this.write.exec('handle', ['/update'], { on: msg => this.logger.info(msg) });
     }
 
-    async load() { 
+    async load() {
         this.logger.info('[Server] Checking data integrity');
         await this.update();
-        // Load global ratelimit 
+        // Load global ratelimit
         const global = new Ratelimiter(this).global();
         this.logger.info(`[Ratelimits] Global: ${global.options.points} reqs / ${global.options.duration}s`);
         // Load 404 ratelimit
