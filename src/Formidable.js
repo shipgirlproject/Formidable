@@ -1,4 +1,5 @@
 const Server = require('fastify');
+
 const Ratelimiter = require('./ratelimit/Ratelimiter.js');
 const Logger = require('./logger/Logger.js');
 
@@ -15,7 +16,7 @@ class Formidable {
         if (threads === 'auto' || isNaN(threads)) threads = cpus().length;
         this.logger = new Logger();
         this.logger.info('[Server] Formidable initializing up');
-        this.server = Server();
+        this.server = Server().register(require('fastify-cors')).register(require('fastify-compress'));
         this.read = pool(`${__dirname}/worker/FormidableReader.js`, { minWorkers: threads - 1, maxWorkers: threads - 1, workerType: 'threads' });
         this.write = pool(`${__dirname}/worker/FormidableWriter.js`, { minWorkers: 1, maxWorkers: 1, maxQueueSize: 1, workerType: 'threads' });
         this.logger.info(`[Server] Worker pool loaded! Initialized ${this.read.workers.length} ${this.read.workerType} for read and ${this.write.workers.length} ${this.write.workerType} for write`);
