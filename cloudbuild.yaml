@@ -1,6 +1,9 @@
 steps:
-  - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/$PROJECT_ID/formidable", "."]
+  - name: "gcr.io/kaniko-project/executor:v1.6.0"
+    args:
+      - --destination=us.gcr.io/$PROJECT_ID/formidable
+      - --cache=true
+      - --cache-ttl=500h
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: gcloud
     args:
@@ -12,4 +15,4 @@ steps:
       - --image=us.gcr.io/$PROJECT_ID/formidable:latest
       - --region=us-central1
       - --quiet
-    images: ["gcr.io/$PROJECT_ID/formidable"]
+# images: ["gcr.io/$PROJECT_ID/formidable"]
