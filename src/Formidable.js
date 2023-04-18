@@ -1,5 +1,7 @@
 const Server = require('fastify');
 const Static = require('@fastify/static');
+const Cors = require('@fastify/cors');
+const Compress = require('@fastify/compress');
 const Pino = require('pino');
 const Piscina = require('piscina');
 const Path = require('path');
@@ -28,7 +30,10 @@ class Formidable {
         this.logger.info(`[Server] Using ${workers} workers`);
         this.server = Server();
         this.server.addContentTypeParser('*', (_, body, done) => done(null, body));
-        this.server.register(Static, { root: Path.join(__dirname, '..', 'site') });
+        this.server
+            .register(Static, { root: Path.join(__dirname, '..', 'site') })
+            .register(Cors)
+            .register(Compress);
     }
     
     async handle(command, endpoint, request, reply) {
