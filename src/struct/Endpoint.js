@@ -1,32 +1,28 @@
-const { readJSONSync } = require('fs-extra');
-const { workerEmit } = require('workerpool');
-const { maxResults } = readJSONSync('./config.json');
+const Ratelimit = require('./Ratelimit.js');
 
-class Route {
+class Endpoint {
     constructor(cache) {
         this.cache = cache;
-        this.ratelimit = {
-            points: 50,
-            duration: 5
-        };
-        this.type = 'READ';
         this.method = 'GET';
-        this.query = [];
+        this.type = 'application/json';
         this.locked = false;
-        this.mimeType = 'application/json';
+        this.ratelimit = new Ratelimit();
+        this.required = new Map();
     }
 
-    get maxResults() {
-        return maxResults || 10;
-    }
-
-    info(msg) {
-        workerEmit(`[${this.type} thread][Worker ${process.pid}] ${msg}`);
+    load() {
+        return Promise.resolve();
     }
 
     run() {
-        throw new Error('Must be extended and implemented');
+        throw new Error('Must be implemented');
+    }
+
+    toString() {
+        const object = {};
+        for (const [key, value] of this.required.entries()) object[key] = value.toString();
+        return object;
     }
 }
 
-module.exports = Route;
+module.exports = Endpoint;

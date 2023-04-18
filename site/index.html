@@ -126,13 +126,13 @@ window.onscroll = function() {
 };
 window.onload = async function() {
     try {
-        const status = await fetch(window.location.pathname.length > 1 ? `${window.location.pathname}/status` : "status").then(data => data.json());
-        const versions = await fetch(window.location.pathname.length > 1 ? `${window.location.pathname}/version` : "version").then(data => data.json());
+        const status = await fetch('/stats').then(data => data.json());
+        const versions = await fetch('/version').then(data => data.json());
         console.log("Raw API Stats: ", status);
         console.log("Raw API Version: ", versions);
         document.getElementById("ships").innerHTML = versions.ships["number-of-ships"];
         document.getElementById("version").innerHTML = versions["version-number"];
-        document.getElementById("memory").innerHTML = bytesToSize(status.memory);
+        document.getElementById("memory").innerHTML = bytesToSize(status.memoryRss);
         document.getElementById("uptime").innerHTML = forHumans(status.uptime);
     } catch (error) {
         console.error(error);

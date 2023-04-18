@@ -1,15 +1,15 @@
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 
-class Ratelimiter {
-    // Default ratelimit: 20 req / 1s
-    constructor(formidable, options = { points: 100, duration: 5 }) {
-        this.formidable = formidable;
+class Limiter {
+    // Default global ratelimit, 50 req / 5s
+    constructor(nagato, options = { points: 50, duration: 5 }) {
+        this.nagato = nagato;
         this.options = options;
         this.manager = new RateLimiterMemory(options);
     }
-
+    
     get server() {
-        return this.formidable.server;
+        return this.nagato.server;
     }
 
     createHeaders(RateLimiterResponse) {
@@ -27,8 +27,9 @@ class Ratelimiter {
             reply.headers(this.createHeaders(RateLimiterResponse));
         } catch (RateLimiterResponse) {
             reply.headers(this.createHeaders(RateLimiterResponse));
+            reply.type('application/json');
             reply.code(429);
-            throw 'You are being ratelimited';
+            throw { message: 'You are being ratelimited!' };
         }
     }
 
@@ -50,4 +51,4 @@ class Ratelimiter {
     }
 }
 
-module.exports = Ratelimiter;
+module.exports = Limiter;

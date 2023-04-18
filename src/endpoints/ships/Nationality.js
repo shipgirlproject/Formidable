@@ -1,14 +1,15 @@
 const Endpoint = require('../../struct/Endpoint.js');
+const Required = require('../../struct/Required.js');
 
 class Nationality extends Endpoint {
     constructor(...args) {
         super(...args);
-        this.query = ['name'];
+        this.required.set('name', new Required('string'));
     }
 
     run(query) {
         return this.cache.data.ships.filter(
-            ship => ship.nationality?.toLowerCase() === query[this.query[0]].toLowerCase()
+            ship => ship.nationality?.toLowerCase() === query.name.toLowerCase()
         );
     }
 }

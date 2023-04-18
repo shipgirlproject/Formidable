@@ -1,117 +1,186 @@
 const Server = require('fastify');
-const Ratelimiter = require('./ratelimit/Ratelimiter.js');
-const Logger = require('./logger/Logger.js');
-
-const { readJSONSync } = require('fs-extra');
-const { cpus } = require('os');
-const { readdirSync } = require('fs-extra');
-const { pool } = require('workerpool');
+const Static = require('@fastify/static');
+const Pino = require('pino');
+const Piscina = require('piscina');
+const Path = require('path');
+const Limiter = require('./struct/Limiter.js');
+const { readdirSync, readJSONSync } = require('fs-extra');
+const { workers, maxQueue, abortTimeout } = require('./struct/Utils.js');
+const { level } = readJSONSync('./config.json');
 
 const config = readJSONSync('./config.json');
 const authorization = process.env.AUTHORIZATION ?? config.auth;
 
 class Formidable {
-    constructor(threads = config.threads) {
-        if (threads === 'auto' || isNaN(threads)) threads = cpus().length;
-        this.logger = new Logger();
-        this.logger.info('[Server] Formidable initializing up');
+    constructor() {
+        this.logger = new Pino(
+            { name: `Formidable [${process.pid}]`, level: level || 'info' },
+            Pino.destination({ sync: false })
+        );
+        this.pool = new Piscina({
+            filename: `${__dirname}/FormidableWorker.js`,
+            minThreads: workers,
+            maxThreads: workers,
+            maxQueue
+        });
+        this.endpoints = [];
+        this.pool.on('error', error => this.logger.error(error));
+        this.logger.info(`[Server] Using ${workers} workers`);
         this.server = Server();
-        this.read = pool(`${__dirname}/worker/FormidableReader.js`, { minWorkers: threads - 1, maxWorkers: threads - 1, workerType: 'threads' });
-        this.write = pool(`${__dirname}/worker/FormidableWriter.js`, { minWorkers: 1, maxWorkers: 1, maxQueueSize: 1, workerType: 'threads' });
-        this.logger.info(`[Server] Worker pool loaded! Initialized ${this.read.workers.length} ${this.read.workerType} for read and ${this.write.workers.length} ${this.write.workerType} for write`);
-        if (isNaN(config.autoUpdateInterval)) return;
-        this.interval = setInterval(() =>
-            this.update()
-                .catch(error => this.logger.error(error)), config.autoUpdateInterval * 60000);
-        this.logger.info(`[Server] Checking for updates every ${config.autoUpdateInterval} min(s)`);
+        this.server.addContentTypeParser('*', (_, body, done) => done(null, body));
+        this.server.register(Static, { root: Path.join(__dirname, '..', 'site') });
     }
-
+    
     async handle(command, endpoint, request, reply) {
         try {
-            if (command.locked && authorization !== request.headers?.authorization) {
+            let body = request.query;
+            if (!authorization && command.locked) {
+                this.logger.warn(`[Server] ${endpoint} requires an auth, but user didn't set "auth" on config or AUTH in process enviroment variables`);
+            } 
+            if (authorization && command.locked && authorization !== request.headers?.authorization) {
                 reply.code(401);
                 return 'Unauthorized';
             }
-            if (command.query.length && !command.query.some(query => request.query[query])) {
+            const queueSize = this.pool.queueSize;
+            if (queueSize >= this.pool.options.maxQueue) {
+                reply.code(503);
+                return { message: `Worker queue is full. Has ${queueSize} pending request(s). Please try again later` };
+            }
+            if (command.method === 'POST') {
+                const contentType = request.headers['content-type'];
+                if (!contentType?.includes('application/json')) {
+                    reply.code(415);
+                    reply.type('application/json');
+                    return { message: `This method only accepts 'application/json', received: ${contentType}` };
+                }
+                body = request.body;
+            }
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), abortTimeout).unref();
+            const result = await this.pool
+                .run({ endpoint, body }, { signal: controller.signal })
+                .finally(() => clearTimeout(timeout)); 
+            if (!result.ok) {
                 reply.code(400);
-                return `This endpoint needs "${command.query.join(', ')}" as a query string`;
+                if (command.method === 'POST')
+                    return { message: 'Required body not found. Body must be application/json, and must contain (refer to required):', required: result.required || null };
+                else
+                    return { message: 'Required query not found. Querystring must contain (refer to required):', required: result.required || null };
             }
-            if (command.type === 'READ') {
-                const result = await this.read.exec('handle', [ endpoint, request.query ], { on: msg => this.logger.debug(msg) });
-                reply.type(command.mimeType);
-                return result;
-            }
-            if (endpoint === 'update') return await this.update();
-            const result = await this.write.exec('handle', [ endpoint, request.query ], { on: msg => this.logger.debug(msg) });
-            reply.type(command.mimeType);
-            return result || 'OK';
+            this.logger.debug(`[Endpoints] Endpoint Executed: ${endpoint} | Took ${result.time}ms`);
+            reply.type(command.type);
+            return Buffer.from(result.data);
         } catch (error) {
+            reply.type('application/json');
             this.logger.error(error);
             reply.code(500);
-            return error.message;
+            return { error: error.message };
         }
     }
 
-    update() {
-        return this.write.exec('handle', ['/update'], { on: msg => this.logger.info(msg) });
+    sendStats(_, reply) {
+        const utilization = this.pool.utilization;
+        const status = {
+            completed: this.pool.completed,
+            utilization: utilization > 100 ? 100 : Math.round(this.pool.utilization),
+            memoryRss: process.memoryUsage().rss,
+            runTime: this.pool.runTime.average,
+            waitime: this.pool.waitTime.average,
+            queueSize: this.pool.queueSize,
+            uptime: Math.floor(process.uptime())
+        };
+        reply.type('application/json');
+        reply.send(status);
     }
 
-    async load() {
-        this.logger.info('[Server] Checking data integrity');
-        await this.update();
+    sendEndpoints(_, reply) {
+        reply.type('application/json');
+        reply.send(this.endpoints);
+    }
+
+    load() {
         // Load global ratelimit
-        const global = new Ratelimiter(this).global();
+        const global = new Limiter(this).global();
         this.logger.info(`[Ratelimits] Global: ${global.options.points} reqs / ${global.options.duration}s`);
         // Load 404 ratelimit
-        const notFound = new Ratelimiter(this, { points: 5, duration: 5 }).notFound();
+        const notFound = new Limiter(this, { points: 5, duration: 5 }).notFound();
         this.logger.info(`[Ratelimits] 404s: ${notFound.options.points} reqs / ${notFound.options.duration}s`);
         // Load endpoints and their specific ratelimits
         const routes = readdirSync('./src/endpoints', { withFileTypes: true });
         for (const path of routes) {
+            // 1st level
             if (path.isFile() && path.name.endsWith('.js')) {
+                if (path.name === 'Landing.js') continue;
                 const endpoint = `/${path.name.split('.').shift().toLowerCase()}`;
                 const command = new (require(`./endpoints/${path.name}`))();
-                const ratelimit = new Ratelimiter(this, command.ratelimit);
+                const ratelimit = new Limiter(this, command.ratelimit);
                 ratelimit.route({
                     method: command.method,
                     url: endpoint,
                     handler: (...args) => this.handle(command, endpoint, ...args)
                 });
+                this.endpoints.push(endpoint);
                 this.logger.info(`[Endpoints] Endpoint Loaded: ${endpoint} | [Ratelimits] ${ratelimit.options.points} reqs / ${ratelimit.options.duration}s`);
             }
             else if (path.isDirectory()) {
+                // 2nd level
                 const endpoints = readdirSync(`./src/endpoints/${path.name}`, { withFileTypes: true });
                 for (const point of endpoints) {
-                    if (!point.isFile() || !point.name.endsWith('.js')) continue;
-                    const endpoint = `/${path.name}/${point.name.split('.').shift().toLowerCase()}`;
-                    const command = new (require(`./endpoints/${path.name}/${point.name}`))();
-                    const ratelimit = new Ratelimiter(this, command.ratelimit);
-                    ratelimit.route({
-                        method: command.method,
-                        url: endpoint,
-                        handler: (...args) => this.handle(command, endpoint, ...args)
-                    });
-                    this.logger.info(`[Endpoints] Endpoint Loaded: ${endpoint} | [Ratelimits] ${ratelimit.options.points} reqs / ${ratelimit.options.duration}s`);
+                    if (point.isDirectory()) {
+                        // 3rd level
+                        const _endpoints = readdirSync(`./src/endpoints/${path.name}/${point.name}`, { withFileTypes: true });
+                        for (const _point of _endpoints) {
+                            if (!_point.isFile() || !_point.name.endsWith('.js')) continue;
+                            const endpoint = `/${path.name}/${point.name}/${_point.name.split('.').shift().toLowerCase()}`;
+                            const command = new (require(`./endpoints/${path.name}/${point.name}/${_point.name}`))();
+                            const ratelimit = new Limiter(this, command.ratelimit);
+                            ratelimit.route({
+                                method: command.method,
+                                url: endpoint,
+                                handler: (...args) => this.handle(command, endpoint, ...args)
+                            });
+                            this.endpoints.push(endpoint);
+                            this.logger.info(`[Endpoints] Endpoint Loaded: ${endpoint} | [Ratelimits] ${ratelimit.options.points} reqs / ${ratelimit.options.duration}s`);
+                        }
+                    }
+                    else if (point.isFile() && point.name.endsWith('.js')){
+                        const endpoint = `/${path.name}/${point.name.split('.').shift().toLowerCase()}`;
+                        const command = new (require(`./endpoints/${path.name}/${point.name}`))();
+                        const ratelimit = new Limiter(this, command.ratelimit);
+                        ratelimit.route({
+                            method: command.method,
+                            url: endpoint,
+                            handler: (...args) => this.handle(command, endpoint, ...args)
+                        });
+                        this.endpoints.push(endpoint);
+                        this.logger.info(`[Endpoints] Endpoint Loaded: ${endpoint} | [Ratelimits] ${ratelimit.options.points} reqs / ${ratelimit.options.duration}s`);
+                    }
                 }
             }
         }
-        // setup landing page
-        const command = new (require('./struct/Landing.js'))();
-        const ratelimit = new Ratelimiter(this, command.ratelimit);
-        ratelimit.route({
-            method: command.method,
-            url: '/',
-            handler: (...args) => this.handle(command, '/formidable.html', ...args)
+        // custom endpoints that dont need workers
+        const stats = new Limiter(this);
+        stats.route({
+            method: 'GET',
+            url: '/stats',  
+            handler: (...args) => this.sendStats(...args)
         });
-        this.logger.info(`[Endpoints] Endpoint Loaded: /formidable.html | [Ratelimits] ${ratelimit.options.points} reqs / ${ratelimit.options.duration}s`);
-        // loaded
+        this.logger.info(`[Endpoints] Endpoint Loaded: /stats | [Ratelimits] ${stats.options.points} reqs / ${stats.options.duration}s`);
+        const endpoints = new Limiter(this);
+        endpoints.route({
+            method: 'GET',
+            url: '/endpoints',
+            handler: (...args) => this.sendEndpoints(...args)
+        });
+        this.logger.info(`[Endpoints] Endpoint Loaded: /endpoints | [Ratelimits] ${stats.options.points} reqs / ${stats.options.duration}s`);
         this.logger.info('[Endpoints] Done loading endpoints!');
         return this;
     }
 
-    async listen(port = process.env.PORT ?? config.port) {
-        if (!port) this.logger.info('[Server] No port set, using random open port');
-        const address = await this.server.listen(port, '0.0.0.0');
+    async listen(host, port) {
+        if (!port) this.logger.warn('[Server] User didn\'t set a port, will use a random open port');
+        if (!authorization) this.logger.warn('[Server] User didn\'t set an auth, locked endpoints will execute without authorization');
+        const address = await this.server.listen({ host, port });
         this.logger.info(`[Server] Server Loaded, Listening at ${address}`);
     }
 }

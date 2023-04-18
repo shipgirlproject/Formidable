@@ -1,9 +1,10 @@
 const Endpoint = require('../../struct/Endpoint.js');
+const Required = require('../../struct/Required.js');
 
 class Ship extends Endpoint {
     constructor(...args) {
         super(...args);
-        this.query = ['id'];
+        this.required.set('id', new Required('string'));
     }
 
     run(query) {

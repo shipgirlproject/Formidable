@@ -1,14 +1,15 @@
 const Endpoint = require('../../struct/Endpoint.js');
+const Required = require('../../struct/Required.js');
 
 class Category extends Endpoint {
     constructor(...args) {
         super(...args);
-        this.query = ['name'];
+        this.required.set('name', new Required('string'));
     }
 
     run(query) {
         return this.cache.data.equipments.filter(
-            equip => equip.category?.toLowerCase() === query[this.query[0]].toLowerCase()
+            equip => equip.category?.toLowerCase() === query.name.toLowerCase()
         );
     }
 }

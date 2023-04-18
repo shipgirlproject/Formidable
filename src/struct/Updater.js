@@ -1,6 +1,5 @@
 const { writeJSONSync, readJSONSync, existsSync, mkdirSync } = require('fs-extra');
-
-const Fetch = require('sync-fetch');
+const { fetch } = require('../struct/Utils.js');
 
 // constants
 const DIRECTORY = './.data';
@@ -29,10 +28,12 @@ const URLS = {
 };
 
 // non exported functions
-const SyncDownload = key => {
+const Download = async key => {
+    const data = await fetch(URLS[key]);
+    const json = JSON.parse(data);
     return {
         key,
-        json: Fetch(URLS[key]).json()
+        json
     };
 };
 const ForceUpdate = () => Object.values(FILES).some(file => !Object.keys(readJSONSync(`${DIRECTORY}/${file}`)).length);
@@ -44,9 +45,9 @@ const Create = () => {
         writeJSONSync(`${DIRECTORY}/${file}`, {});
     }
 };
-const Check = () => {
+const Check = async () => {
     if (ForceUpdate()) return Object.keys(FILES);
-    const remote = Fetch(URLS.VERSION).json();
+    const remote = JSON.parse(await fetch(URLS.VERSION));
     const local = readJSONSync(`${DIRECTORY}/${FILES.VERSION}`);
     const outdated = [];
     for (const [ key, value ] of Object.entries(remote)) {
@@ -56,8 +57,8 @@ const Check = () => {
     if (outdated.length) outdated.push('VERSION');
     return outdated;
 };
-const Update = outdated => {
-    const data = outdated.map(SyncDownload);
+const Update = async outdated => {
+    const data = await Promise.all(outdated.map(Download));
     for (const { key, json } of data) {
         if (key === 'CHAPTERS') {
             const modified = [];

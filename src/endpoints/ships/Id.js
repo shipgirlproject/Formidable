@@ -1,13 +1,14 @@
 const Endpoint = require('../../struct/Endpoint.js');
+const Required = require('../../struct/Required.js');
 
 class Id extends Endpoint {
     constructor(...args) {
         super(...args);
-        this.query = ['code'];
+        this.required.set('code', new Required('string'));
     }
 
     run(query) {
-        return this.cache.data.ships.find(ship => ship.id === query[this.query[0]]);
+        return this.cache.data.ships.find(ship => ship.id === query.code);
     }
 }
 

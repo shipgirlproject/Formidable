@@ -1,8 +1,10 @@
 # Formidable
-> A Node.JS server side Azur Lane Data API that automatically manages and updates your data as needed!
+> An azurlane data manager that updates / safekeeps your data as needed! 
 <p align="center">
   <img src="https://azurlane.netojuu.com/w/images/3/3a/FormidableSummerWithoutBG.png">
 </p>
+
+> Why? I usually take the microservice-ed approach on some of my apis so if things go down, I can fix those without needing to touch the main data consumers
 
 ## Features
 * Speedy
@@ -13,7 +15,6 @@
 * Supported Data: `Ship`, `Equipments`, `Barrages`, `Chapters` and `VoiceLines`
 
 ## API
-
 
 > Test Node: https://formidable.herokuapp.com/
 
@@ -42,28 +43,28 @@
 > The endpoints actually format the JSON response data so you can actually read it at your browser
 ### Ships 
 | Endpoint         | Ratelimit      | Return Data     | Description     |
-| :-------------: | :------------: | :-------------: | :-------------: |
+| :-------------: | :------------: | :-------------: | :--------------: |
 | GET /ships/class?name=Iowa | 50req / 5s | Object[] | List all the ships that has this class |
 | GET /ships/hull?name=Battleship | 50req / 5s | Object[] | List all the ships that has this hull type |
 | GET /ships/id?code=147 | 50req / 5s | Object | Gets the ship with this ID |
 | GET /ships/nationality?name=Sakura%20Empire | 50req / 5s | Object[] | List all the ships that has this nationality |
 | GET /ships/rarity?name=Super%20Rare | 50req / 5s | Object[] | List all the ships that has this rarity |
 | GET /ships/random | 50req / 5s | Object[] | List all the ships that has this rarity |
-| GET /ships/search?name=Formidable | 40req / 5s | Object[] | Searches for the ship of your choice |
+| GET /ships/search?name=Formidable | 25req / 5s | Object[] | Searches for the ship of your choice |
 ### Equipments
 | Endpoint         | Ratelimit      | Return Data     | Description     |
 | :--------------: | :------------: | :-------------: | :-------------: |
 | GET /equipments/category?name=Destroyer%20Guns | 50req / 5s | Object[] | List all the equipments that is in this category |
 | GET /equipments/nationality?name=Sakura%20Empire | 50req / 5s | Object[] | List all the equipments that has this nationality |
-| GET /equipments/search?name=Twin%20410mm | 40req / 5s | Object[] | Searches for the equip of your choice |
+| GET /equipments/search?name=Twin%20410mm | 25req / 5s | Object[] | Searches for the equip of your choice |
 ### Chapters
 | Endpoint         | Ratelimit      | Return Data     | Description     |
 | :--------------: | :------------: | :-------------: | :-------------: |
-| GET /chapters/search?name=6-4 | 40req / 5s | Object | Searches for the chapter via it's code or name |
+| GET /chapters/search?name=6-4 | 25req / 5s | Object | Searches for the chapter via it's code or name |
 ### Barrages
 | Endpoint         | Ratelimit      | Return Data     | Description     |
 | :--------------: | :------------: | :-------------: | :-------------: |
-| GET /barrages/search?name=Ayanami | 40req / 5s | Object | Searches a ship barrage via it's name |
+| GET /barrages/search?name=Ayanami | 25req / 5s | Object | Searches a ship barrage via it's name |
 ### Voice Lines
 | Endpoint         | Ratelimit      | Return Data     | Description     |
 | :--------------: | :------------: | :-------------: | :-------------: |

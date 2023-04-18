@@ -1,17 +1,16 @@
 const Endpoint = require('../../struct/Endpoint.js');
+const Ratelimit = require('../../struct/Ratelimit.js');
+const Required = require('../../struct/Required.js');
 
 class Search extends Endpoint {
     constructor(...args) {
         super(...args);
-        this.query = ['name'];
-        this.ratelimit = {
-            points: 40,
-            duration: 5
-        };
+        this.ratelimit = new Ratelimit(25, 5);
+        this.required.set('name', new Required('string'));
     }
 
     run(query) {
-        const results = this.cache.fuse.barrages.search(query[this.query[0]]);
+        const results = this.cache.fuse.barrages.search(query.name);
         if (results.length > this.maxResults) results.length = this.maxResults;
         return results.map(res => res.item);
     }
