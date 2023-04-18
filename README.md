@@ -1,7 +1,7 @@
 # Formidable
 > An azurlane data manager that updates / safekeeps your data as needed! 
 <p align="center">
-  <img src="https://azurlane.netojuu.com/w/images/3/3a/FormidableSummerWithoutBG.png">
+  <img src="https://azurlane.netojuu.com/images/b/be/FormidableParty.png">
 </p>
 
 > Why? I usually take the microservice-ed approach on some of my apis so if things go down, I can fix those without needing to touch the main data consumers
