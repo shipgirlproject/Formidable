@@ -46,10 +46,8 @@ const handle = async ({ endpoint, body }) => {
     if (!handler)
         throw new Error('Endpoint don\'t exist');
     const start = performance.now();
-    if (handler.required.size) {
-        if (isIncomplete(handler.required, body))
-            return { ok: false, required: handler.toString() };
-    }
+    if (handler.required.size && isIncomplete(handler.required, body))
+        return { ok: false, required: handler.toString() };
     const result = await handler.run(body);
     let data;
     switch (handler.type) {
