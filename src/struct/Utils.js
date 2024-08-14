@@ -1,11 +1,6 @@
 const Https = require('https');
-const { cpus } = require('os');
-const { readJSONSync } = require('fs-extra');
-const { threads, maxQueue } = readJSONSync('./config.json');
 
 module.exports = {
-    workers: isNaN(threads) ? Math.floor(50 * cpus().length / 100) : Number(threads),
-    maxQueue: maxQueue || 'auto',
     abortTimeout: 10000,
     fetch: (url, options) => new Promise((resolve, reject) => {
         const request = Https.request(url, options, response => {

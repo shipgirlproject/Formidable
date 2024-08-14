@@ -1,34 +1,37 @@
+const { readdirSync } = require('fs-extra');
+
+const Os = require('os');
 const Server = require('fastify');
+
 const Static = require('@fastify/static');
 const Cors = require('@fastify/cors');
 const Compress = require('@fastify/compress');
+
 const Pino = require('pino');
 const Piscina = require('piscina');
 const Path = require('path');
-const Limiter = require('./struct/Limiter.js');
-const { readdirSync, readJSONSync } = require('fs-extra');
-const { workers, maxQueue, abortTimeout } = require('./struct/Utils.js');
-const { level } = readJSONSync('./config.json');
 
-const config = readJSONSync('./config.json');
-const authorization = process.env.AUTHORIZATION ?? config.auth;
+const Limiter = require('./struct/Limiter.js');
+const Config = require('./Config.js');
+
+const { abortTimeout } = require('./struct/Utils.js');
 
 class Formidable {
     constructor() {
         this.logger = new Pino(
-            { name: `Formidable [${process.pid}]`, level: level || 'info' },
+            { name: `Formidable [${process.pid}]`, level: Config.level },
             Pino.destination({ sync: false })
         );
         this.pool = new Piscina({
             filename: `${__dirname}/FormidableWorker.js`,
             idleTimeout: 30000,
             minThreads: 0,
-            maxThreads: workers,
-            maxQueue
+            maxThreads: Config.threads === 'auto' ? Os.cpus().length : Config.threads,
+            maxQueue: Config.maxQueue
         });
         this.endpoints = [];
         this.pool.on('error', error => this.logger.error(error));
-        this.logger.info(`[Server] Using ${workers} workers`);
+        this.logger.info(`[Server] Using ${this.pool.maxThreads} workers`);
         this.server = Server();
         this.server.addContentTypeParser('*', (_, body, done) => done(null, body));
         this.server
@@ -40,10 +43,10 @@ class Formidable {
     async handle(command, endpoint, request, reply) {
         try {
             let body = request.query;
-            if (!authorization && command.locked) {
+            if (!Config.auth && command.locked) {
                 this.logger.warn(`[Server] ${endpoint} requires an auth, but user didn't set "auth" on config or AUTH in process enviroment variables`);
             } 
-            if (authorization && command.locked && authorization !== request.headers?.authorization) {
+            if (Config.auth && command.locked && Config.auth !== request.headers?.authorization) {
                 reply.code(401);
                 return 'Unauthorized';
             }
@@ -183,10 +186,10 @@ class Formidable {
         return this;
     }
 
-    async listen(host, port) {
-        if (!port) this.logger.warn('[Server] User didn\'t set a port, will use a random open port');
-        if (!authorization) this.logger.warn('[Server] User didn\'t set an auth, locked endpoints will execute without authorization');
-        const address = await this.server.listen({ host, port });
+    async listen() {
+        if (!Config.port) this.logger.warn('[Server] User didn\'t set a port, will use a random open port');
+        if (!Config.auth) this.logger.warn('[Server] User didn\'t set an auth, locked endpoints will execute without authorization');
+        const address = await this.server.listen({ host: Config.host, port: Config.port });
         this.logger.info(`[Server] Server Loaded, Listening at ${address}`);
     }
 }
