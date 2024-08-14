@@ -21,7 +21,8 @@ class Formidable {
         );
         this.pool = new Piscina({
             filename: `${__dirname}/FormidableWorker.js`,
-            minThreads: workers,
+            idleTimeout: 30000,
+            minThreads: 0,
             maxThreads: workers,
             maxQueue
         });
