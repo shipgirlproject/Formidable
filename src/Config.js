@@ -6,13 +6,13 @@ const maxResults = !isNaN(Number(process.env.MAX_RESULTS)) ? Number(process.env.
 const autoUpdateInterval = !isNaN(Number(process.env.AUTO_UPDATE_INTERVAL)) ? Number(process.env.AUTO_UPDATE_INTERVAL) : 10;
 
 module.exports = {
-    level: process.env.LEVEL ?? 'info',
-    host: process.env.HOST ?? '0.0.0.0',
-    auth: process.env.AUTH,
-    port,
-    distance,
-    threads,
-    maxQueue,
-    maxResults,
-    autoUpdateInterval
+	level: process.env.LEVEL ?? 'info',
+	host: process.env.HOST ?? '0.0.0.0',
+	auth: process.env.AUTH,
+	port,
+	distance,
+	threads,
+	maxQueue,
+	maxResults,
+	autoUpdateInterval
 };
