@@ -12,6 +12,7 @@ class Cache {
 		this.fuse = {};
 		this.listening = false;
 		for (const [ key, file ] of Object.entries(FILES)) this.update(key, `${DIRECTORY}/${file}`);
+
 		this.monitor();
 	}
 
@@ -20,19 +21,14 @@ class Cache {
 	}
 
 	update(key, directory) {
-		Create()
-			.then(() => {
-				// read data
-				const data = readJSONSync(directory);
-				// do not update internal data if local files is empty
-				if (!Object.keys(data || {}).length) return;
-				this.data[key.toLowerCase()] = data;
-				const keys = SEARCH[key];
-				if (!keys) return;
-				const dist = Config.distance;
-				this.fuse[key.toLowerCase()] = new Fuse(this.data[key.toLowerCase()], { keys, distance: dist });
-			})
-			.catch(() => null);
+		const data = readJSONSync(directory);
+		// do not update internal data if local files is empty
+		if (!Object.keys(data || {}).length) return;
+		this.data[key.toLowerCase()] = data;
+		const keys = SEARCH[key];
+		if (!keys) return;
+		const dist = Config.distance;
+		this.fuse[key.toLowerCase()] = new Fuse(this.data[key.toLowerCase()], { keys, distance: dist });
 	}
 
 	monitor() {

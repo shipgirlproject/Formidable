@@ -49,7 +49,6 @@ class Formidable {
 	}
 
 	async handle(command, endpoint, request, reply) {
-		console.log(endpoint);
 		try {
 			let body = request.query;
 			if (!Config.auth && command.locked) {
@@ -116,7 +115,15 @@ class Formidable {
 		reply.send(this.endpoints);
 	}
 
-	load() {
+	async load() {
+		// Check for updates
+		this.logger.info('[Server] Checking for latest updates...');
+		try {
+			await this.update();
+			this.logger.info('[Server] Update done');
+		} catch (error) {
+			this.logger.error(error);
+		}
 		// Load global ratelimit
 		const global = new Limiter(this).global();
 		this.logger.info(`[Ratelimits] Global: ${global.options.points} reqs / ${global.options.duration}s`);
@@ -196,14 +203,6 @@ class Formidable {
 	async listen() {
 		if (!Config.port) this.logger.warn('[Server] User didn\'t set a port, will use a random open port');
 		if (!Config.auth) this.logger.warn('[Server] User didn\'t set an auth, locked endpoints will execute without authorization');
-
-		this.logger.info('[Server] Checking for latest updates...');
-		try {
-			await this.update();
-			this.logger.info('[Server] Update done');
-		} catch (error) {
-			this.logger.error(error);
-		}
 
 		setInterval(() => {
 			try {

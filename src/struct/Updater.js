@@ -62,9 +62,8 @@ const Check = async () => {
 	const shouldForceUpdate = await ForceUpdate();
 	if (shouldForceUpdate) return Object.keys(FILES);
 
-	/** @type string */
-	const raw = await fetch(URLS.VERSION);
-	const remote = JSON.parse(raw);
+	const response = await Axios.get(URLS.VERSION);
+	const remote = response.data;
 	const local = await readJSON(`${DIRECTORY}/${FILES.VERSION}`);
 
 	const outdated = [];

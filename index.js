@@ -1,5 +1,7 @@
 const Formidable = require('./src/Formidable.js');
 
-new Formidable()
-	.load()
-	.listen();
+(async function main() {
+	const client = new Formidable();
+	await client.load();
+	await client.listen();
+})();
